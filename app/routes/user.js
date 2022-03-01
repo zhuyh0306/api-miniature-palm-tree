@@ -1,9 +1,36 @@
 const Router = require('koa-router');
+const jwt = require('koa-jwt');
+const jsonwebtoken = require('jsonwebtoken');
+const { secret } = require('../config');
+const router = new Router({ prefix: '/api/user' });
+const auth = jwt({ secret });
+// const auth = async (ctx, next) => {
+//   const { authorization = '' } = ctx.request.header;
+//   console.log(authorization);
+//   const token = authorization.replace('Bearer ', '');
 
-const router = new Router({ prefix: '/user' });
-const { find, findList, create } = require('../controllers/user');
+//   try {
+//     const user = jsonwebtoken.verify(token, serect);
+//     ctx.state.use = user;
+//   } catch (err) {
+//     console.log(err);
+//     ctx.throw('401');
+//   }
+//   await next();
+// };
+const {
+  find,
+  findList,
+  create,
+  updateUserInfo,
+  delete: del,
+  login
+} = require('../controllers/user');
 
 router.get('/', findList);
 router.post('/', create);
 router.get('/:id', find);
+router.patch('/:id', auth, updateUserInfo);
+router.delete('/:id', del);
+router.post('/login', login);
 module.exports = router;

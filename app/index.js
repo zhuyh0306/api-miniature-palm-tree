@@ -7,17 +7,24 @@ const parameter = require('koa-parameter');
 const momgoose = require('mongoose');
 const installRoute = require('./routes');
 const { dbUrl, port } = require('./config');
-
+const formatResponse = require('./middlewares/formatResponse');
 console.log(dbUrl);
-momgoose.connect(dbUrl, () => { console.log('连接成功'); });
-momgoose.connection.on('error', (err) => {
+momgoose.connect(dbUrl, () => {
+  console.log('连接成功');
+});
+momgoose.connection.on('error', err => {
   console.log(err, '------------');
 });
 
-app.use(error({
-  postFormat: (e, { stack, ...rest }) => (process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }),
-}));
+app.use(
+  error({
+    postFormat: (e, { stack, ...rest }) =>
+      process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
+  })
+);
 app.use(bodyparser());
 app.use(parameter(app));
+app.use(formatResponse());
 installRoute(app);
+
 app.listen(port);

@@ -3,10 +3,23 @@ const momgoose = require('mongoose');
 const { Schema, model } = momgoose;
 
 const userSchema = new Schema({
-  userName: {
-    type: String, required: true,
+  __v: {
+    type: Number,
+    select: false
+  },
+  user: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false
   },
   telePhone: {
-    type: String, required: true,
-  },
+    type: String,
+    required: false
+  }
 });
+
+module.exports = model('user', userSchema);
