@@ -19,6 +19,10 @@ const userSchema = new Schema({
   telePhone: {
     type: String,
     required: false
+  },
+  avatar: {
+    type: String,
+    required: false
   }
 });
 

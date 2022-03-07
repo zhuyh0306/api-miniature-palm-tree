@@ -1,6 +1,9 @@
 const jsonwebtoken = require('jsonwebtoken');
+const fs = require('fs');
 const User = require('../models/user');
 const { secret } = require('../config');
+const { sendMsg } = require('../utils/sendMessage');
+const ossClient = require('../utils/saveOss');
 class UserCtl {
   async create(ctx) {
     ctx.verifyParams({
@@ -64,6 +67,7 @@ class UserCtl {
       }
     });
     const userInfo = await User.findOne(ctx.request.body);
+    // await sendMsg();
     if (!userInfo) ctx.throw(401, '用户名或密码不正确');
     const { _id, user } = userInfo;
     //expiresIn: '1d'过期事件一天
@@ -76,6 +80,31 @@ class UserCtl {
       },
       '注册成功'
     );
+  }
+  /*
+  /*upload
+  */
+  async upload(ctx) {
+    console.log(',upload');
+    const files = ctx.request.files.files; // 获取上传文件
+
+    // 创建可读流
+    const stream = fs.createReadStream(files.path);
+    // yuny 为文件，意思是将文件存放到yuny 文件夹下
+    console.log(stream);
+    let result = null;
+    try {
+      result = await ossClient.putStream('/avatar/' + files.name, stream);
+    } catch (err) {
+      throw new Error(err);
+    }
+
+    console.log(result);
+    const reqBody = {
+      avatar: result.url
+    };
+    const user = await User.findByIdAndUpdate(ctx.request.body._id, reqBody);
+    ctx.body = user;
   }
 }
 module.exports = new UserCtl();

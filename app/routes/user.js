@@ -24,7 +24,8 @@ const {
   create,
   updateUserInfo,
   delete: del,
-  login
+  login,
+  upload
 } = require('../controllers/user');
 
 router.get('/', findList);
@@ -33,4 +34,5 @@ router.get('/:id', find);
 router.patch('/:id', auth, updateUserInfo);
 router.delete('/:id', del);
 router.post('/login', login);
+router.post('/upload', upload);
 module.exports = router;
